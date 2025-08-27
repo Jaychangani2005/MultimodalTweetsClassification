@@ -158,11 +158,6 @@ data/
 *.pkl
 *.pickle
 
-# Experiment results and logs
-exp/
-*.log
-logs/
-
 # Backup files
 backup/
 *.bak
@@ -196,12 +191,6 @@ tmp/
 temp/
 *.tmp
 
-# Docker
-.dockerignore
-
-# Git
-.git/
-.gitignore.txt
 
 # Project specific - keep these if they're small config files
 # Uncomment if you want to keep small config files
