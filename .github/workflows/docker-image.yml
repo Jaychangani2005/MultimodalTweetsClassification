@@ -26,6 +26,6 @@ jobs:
           logout: true
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag jaychangani13/TweetsClassification:1.0
+        run: docker build . --file Dockerfile --tag jaychangani13/tweets-classification:1.0
       - name: Push the docker image
-        run: docker push jaychangani13/TweetsClassification:1.0
+        run: docker push jaychangani13/tweets-classification:1.0
