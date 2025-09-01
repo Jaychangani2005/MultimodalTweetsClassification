@@ -119,11 +119,8 @@ RUN apt-get update && \
 # Copy the entire project into the container
 COPY . .
 
-# Switch working directory to notebooks folder
-WORKDIR /app/notebooks
-
 # Expose Jupyter Notebook port
 EXPOSE 8888
 
 # Run Jupyter Notebook from the notebooks folder
-CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--notebook-dir=/app/notebooks"]
