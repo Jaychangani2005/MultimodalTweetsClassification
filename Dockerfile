@@ -32,9 +32,15 @@ FROM python:3.7-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy requirements file and install dependencies, including jupyter
+# Copy requirements file first
 COPY requirement.txt .
-RUN pip install --no-cache-dir jupyter -r requirement.txt
+
+# Install build tools, then install Python packages, then clean up
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    pip install --no-cache-dir jupyter -r requirement.txt && \
+    apt-get purge -y --auto-remove build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the rest of your project files
 COPY . .
@@ -42,5 +48,5 @@ COPY . .
 # Expose the default Jupyter port
 EXPOSE 8888
 
-# Command to run Jupyter Notebook, accessible from outside the container
+# Command to run Jupyter Notebook
 CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
