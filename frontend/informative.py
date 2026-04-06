@@ -12,6 +12,11 @@ import sys
 import os
 from pathlib import Path
 
+try:
+    import config  # when running via `streamlit run` inside this folder
+except ImportError:  # fallback if repo root is on sys.path
+    from frontend import config
+
 # Add the parent directory to the Python path to import custom modules
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -101,8 +106,8 @@ def load_model_and_tokenizer():
     """Load the trained model and tokenizer"""
     try:
         # Paths
-        model_path = r"E:\notebooks\MultimodalTweetsClassification\models\best_multimodal_informative.pth"
-        bert_path = r"E:\notebooks\MultimodalTweetsClassification\bert_model"
+        model_path = config.MODEL_PATH
+        bert_path = config.BERT_MODEL_PATH
         
         # Load tokenizer
         try:

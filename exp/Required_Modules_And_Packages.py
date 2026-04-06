@@ -6,17 +6,20 @@ created on 11/07/2020
 
 # importing necessary modules
 
-from fastai import *
-from fastai.vision import *
-from fastai.text import *
-from fastai.callbacks import *
-from exp.external.Precision_Module import Precision1
-# from fastai.callbacks import Callback
-from fastai.basic_train import *
-
-
-
-from fastai.callbacks import SaveModelCallback, EarlyStoppingCallback  # import only what you use
+# NOTE: fastai (v1) is optional for the modernized Python 3.11 setup.
+# Some legacy notebooks/scripts import this file even when they don't actually use fastai.
+try:
+	from fastai import *
+	from fastai.vision import *
+	from fastai.text import *
+	from fastai.callbacks import *
+	from exp.external.Precision_Module import Precision1
+	from fastai.basic_train import *
+	from fastai.callbacks import SaveModelCallback, EarlyStoppingCallback
+except Exception:  # pragma: no cover
+	Precision1 = None
+	SaveModelCallback = None
+	EarlyStoppingCallback = None
 
 
 import numpy as np
@@ -36,6 +39,22 @@ import zipfile
 
 from transformers import PreTrainedModel, PreTrainedTokenizer, PretrainedConfig
 
-from transformers.optimization import AdamW
-from transformers import AdamW
 from functools import partial
+
+
+
+import torch.nn as nn
+import torch.nn.functional as F
+from transformers import AutoTokenizer, AutoModel
+from torchvision.models import resnet50
+from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader
+try:
+	# Prefer PyTorch's AdamW for modern transformers
+	from torch.optim import AdamW
+except Exception:  # pragma: no cover
+	AdamW = None
+from PIL import Image
+from tqdm import tqdm
+import torch.multiprocessing as mp
+import random

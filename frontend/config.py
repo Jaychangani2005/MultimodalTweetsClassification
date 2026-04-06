@@ -1,13 +1,12 @@
-"""
-Configuration settings for the Multimodal Tweet Classification Streamlit App
-"""
+"""Configuration settings for the Multimodal Tweet Classification Streamlit App."""
 
-import os
 from pathlib import Path
 
-# Model paths
-MODEL_PATH = r"E:\notebooks\MultimodalTweetsClassification\models\best_multimodal_informative.pth"
-BERT_MODEL_PATH = r"E:\notebooks\MultimodalTweetsClassification\bert_model"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+# Model paths (repo-relative)
+MODEL_PATH = str(PROJECT_ROOT / "models" / "best_multimodal_informative.pth")
+BERT_MODEL_PATH = str(PROJECT_ROOT / "bert_model")
 
 # Fallback model settings
 FALLBACK_BERT_MODEL = "bert-base-uncased"

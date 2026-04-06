@@ -23,6 +23,12 @@ matplotlib.use('Agg')  # Set backend for Streamlit compatibility
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Import repo-local config robustly (works from repo root or from within `frontend/`)
+try:
+    import config  # type: ignore
+except Exception:  # pragma: no cover
+    from frontend import config  # type: ignore
+
 # ==================== Model Architecture (Same as Notebook) ====================
 
 class CrossAttentionBlock(nn.Module):
@@ -184,8 +190,8 @@ def load_model_and_tokenizer():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # Paths
-    model_path = Path("E:/notebooks/MultimodalTweetsClassification/bert_model")
-    checkpoint_path = Path("E:/notebooks/MultimodalTweetsClassification/models/best_multimodal_informative.pth")
+    model_path = Path(config.BERT_MODEL_PATH)
+    checkpoint_path = Path(config.MODEL_PATH)
     
     try:
         # Load tokenizer and BERT

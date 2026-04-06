@@ -1,21 +1,35 @@
-fastai==1.0.60
-fire==0.3.1
-graphviz==0.13.2
-matplotlib==3.2.0
-numpy==1.18.1
-pandas==1.0.2
-python-dateutil==2.8.1
-regex==2020.5.14
-requests==2.23.0
-requests-oauthlib==1.3.0
-scikit-learn==0.22.2.post1
-scipy==1.4.1
-six==1.14.0
-spacy==2.2.3
-tokenizers==0.7.0
-torch==1.4.0
-torchvision==0.5.0
-tqdm==4.43.0
-transformers==2.11.0
-urllib3==1.25.7
-utils==1.0.1
+# Unified requirements for running the full project (notebooks + frontend)
+# Recommended Python version: 3.10 or 3.11
+# For strict legacy reproducibility on Python 3.7, use requirements_legacy_py37.txt
+
+# Core deep learning
+torch>=2.1.0
+torchvision>=0.16.0
+transformers>=4.35.0
+tokenizers>=0.13.3
+
+# Optional legacy module compatibility (used by some older code paths)
+fastai>=2.7.12
+
+# App/frontend
+streamlit>=1.28.0
+
+# Data science stack
+numpy>=1.23.0
+pandas>=1.5.0
+scikit-learn>=1.2.0
+scipy>=1.10.0
+tqdm>=4.62.0
+
+# Visualization and image handling
+Pillow>=9.0.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Utilities used by preprocessing/tokenization and scripts
+python-dateutil>=2.8.0
+six>=1.16.0
+regex>=2022.0.0
+requests>=2.28.0
+requests-oauthlib>=1.3.0
+urllib3>=1.26.0

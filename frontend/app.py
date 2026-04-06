@@ -1,20 +1,28 @@
 import streamlit as st
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
+from pathlib import Path
+
+try:
+    import config
+except ImportError:
+    from frontend import config
 
 # --- Import aidrtokenize from your project ---
 try:
-    from exp.Required_Modules_And_Packages import aidrtokenize
+    from exp.external import aidrtokenize
 except ImportError:
     # Fallback: simple tokenizer if aidrtokenize is not available
     import re
+
     class AidrTokenizer:
         @staticmethod
         def tokenize(text):
             text = re.sub(r"http\S+", "", text)  # Remove URLs
-            text = re.sub(r"#\S+", "", text)     # Remove hashtags
-            text = re.sub(r"@\S+", "", text)     # Remove mentions
+            text = re.sub(r"#\S+", "", text)  # Remove hashtags
+            text = re.sub(r"@\S+", "", text)  # Remove mentions
             return text
+
     aidrtokenize = AidrTokenizer()
 
 # --- Preprocessing functions (from Data_Reading_And_Preprocessing.py) ---
@@ -27,9 +35,9 @@ def preprocess_text(text):
     return text
 
 # --- Load model and tokenizer ---
-model_path = "e:/notebooks/MultimodalTweetsClassification/bert_model"
-tokenizer = BertTokenizer.from_pretrained(model_path)
-model = BertForSequenceClassification.from_pretrained(model_path)
+model_path = Path(config.BERT_MODEL_PATH)
+tokenizer = BertTokenizer.from_pretrained(str(model_path))
+model = BertForSequenceClassification.from_pretrained(str(model_path))
 model.eval()
 
 # --- Define label names (update if needed) ---

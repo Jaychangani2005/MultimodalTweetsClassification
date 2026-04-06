@@ -5,7 +5,6 @@ import torch.nn.functional as torch_F  # Renamed to avoid namespace conflict
 from transformers import AutoTokenizer, AutoModel
 from torchvision.models import resnet50
 from torchvision import transforms
-import torchvision.transforms.functional as F  # This is the conflicting import
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,6 +12,11 @@ import io
 import sys
 import os
 from pathlib import Path
+
+try:
+    import config  # when running via `streamlit run` inside this folder
+except ImportError:  # fallback if repo root is on sys.path
+    from frontend import config
 
 # Add parent directory to the Python path to import custom modules
 sys.path.append(str(Path(__file__).parent.parent))
@@ -86,67 +90,6 @@ class CrossAttention(nn.Module):
         k = self.key(context)
         v = self.value(context)
         attention = torch.matmul(q, k.transpose(-2, -1)) * self.scale
-        attention = torch_F.softmax(attention, dim=-1)  # Fixed: using torch_F instead of F
-        out = torch.matmul(attention, v)
-        return out
-
-class MultimodalClassifier(nn.Module):
-    def __init__(self, hidden_dim=512, num_classes=7, bert_model=None):
-        super().__init__()
-        # Image encoder (ResNet50)
-        self.image_encoder = resnet50(pretrained=True)
-        self.image_encoder.fc = nn.Identity()  # Remove final classification layer
-        
-        # Text encoder (BERT)
-        self.text_encoder = bert_model if bert_model is not None else AutoModel.from_pretrained('bert-base-uncased')
-        
-        # Project both modalities to same dimension
-        self.image_projection = nn.Linear(2048, hidden_dim)  # ResNet50 output dim is 2048
-        self.text_projection = nn.Linear(768, hidden_dim)    # BERT output dim is 768
-        
-        # Cross attention layers
-        self.img2text_attention = CrossAttention(hidden_dim)
-        self.text2img_attention = CrossAttention(hidden_dim)
-        
-        # Final classification layers
-        self.fusion = nn.Sequential(
-            nn.Linear(hidden_dim * 2, hidden_dim),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(hidden_dim, num_classes)
-        )
-
-    def forward(self, images, input_ids, attention_mask):
-        # Image features
-        img_features = self.image_encoder(images)  # [batch_size, 2048]
-        img_features = self.image_projection(img_features)  # [batch_size, hidden_dim]
-
-        # Text features
-        text_outputs = self.text_encoder(input_ids=input_ids, attention_mask=attention_mask)
-        last_hidden_state = text_outputs[0]
-        text_features = last_hidden_state[:, 0, :]  # Use [CLS] token
-        text_features = self.text_projection(text_features)  # [batch_size, hidden_dim]
-
-        # Cross attention
-        img_attended = self.text2img_attention(img_features.unsqueeze(1), text_features.unsqueeze(1))
-#         text_attended = self.img2text_attention(text_features.unsqueeze(1), img_features.unsqueeze(1))
-
-#         fused_features = torch.cat([img_attended.squeeze(1), text_attended.squeeze(1)], dim=-1)
-#         output = self.fusion(fused_features)
-#         return output
-class CrossAttention(nn.Module):
-    def __init__(self, dim):
-        super().__init__()
-        self.query = nn.Linear(dim, dim)
-        self.key = nn.Linear(dim, dim)
-        self.value = nn.Linear(dim, dim)
-        self.scale = dim ** -0.5
-
-    def forward(self, x, context):
-        q = self.query(x)
-        k = self.key(context)
-        v = self.value(context)
-        attention = torch.matmul(q, k.transpose(-2, -1)) * self.scale
         attention = torch_F.softmax(attention, dim=-1)  # Using torch_F instead of F
         out = torch.matmul(attention, v)
         return out
@@ -192,9 +135,9 @@ class MultimodalClassifier(nn.Module):
 def load_model_and_tokenizer():
     """Load the trained model and tokenizer"""
     try:
-        # Paths
-        model_path = r"e:\notebooks\MultimodalTweetsClassification\models\best_humanitarian_multimodal_informative.pth"
-        bert_path = r"e:\notebooks\MultimodalTweetsClassification\bert_model"
+        # Paths (repo-relative)
+        model_path = str(config.PROJECT_ROOT / "models" / "best_humanitarian_multimodal_informative.pth")
+        bert_path = config.BERT_MODEL_PATH
         
         # Load tokenizer
         try:
@@ -219,7 +162,7 @@ def load_model_and_tokenizer():
             st.success("Model loaded successfully!")
         else:
             st.error(f"Model file not found at: {model_path}")
-            return None, None
+            return None, None, None
         
         model.to(device)
         model.eval()

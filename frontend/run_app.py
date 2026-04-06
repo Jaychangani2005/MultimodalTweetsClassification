@@ -8,6 +8,11 @@ import sys
 import subprocess
 from pathlib import Path
 
+try:
+    import config
+except ImportError:
+    from frontend import config
+
 def check_requirements():
     """Check if required packages are installed"""
     required_packages = ['streamlit', 'torch', 'transformers', 'PIL']
@@ -34,8 +39,8 @@ def check_requirements():
 
 def check_model_files():
     """Check if model files exist"""
-    model_path = Path("E:/notebooks/MultimodalTweetsClassification/models/best_multimodal_informative.pth")
-    bert_path = Path("E:/notebooks/MultimodalTweetsClassification/bert_model")
+    model_path = Path(config.MODEL_PATH)
+    bert_path = Path(config.BERT_MODEL_PATH)
     
     issues = []
     

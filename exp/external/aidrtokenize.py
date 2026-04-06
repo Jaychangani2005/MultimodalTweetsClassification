@@ -33,6 +33,7 @@ import six.moves.html_parser
 from dateutil.parser import _timelex, parser
 import string
 import os
+from pathlib import Path
 import six
 from six.moves import range
 
@@ -413,7 +414,8 @@ def read_stop_words(file_name):
     return stop_words;
 
 
-stop_words_file = "exp/external/stop_words_english.txt"
+# Resolve stop-words path relative to this module so imports do not depend on CWD.
+stop_words_file = str(Path(__file__).resolve().parent / "stop_words_english.txt")
 stop_words = read_stop_words(stop_words_file)
 
 
